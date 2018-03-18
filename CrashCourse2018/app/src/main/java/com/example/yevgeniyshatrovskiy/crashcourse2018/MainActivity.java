@@ -48,16 +48,12 @@ public class MainActivity extends AppCompatActivity {
 
         final EditText fName   = findViewById(R.id.firstName);
         final EditText sName   = findViewById(R.id.secondName);
+        final EditText age = findViewById(R.id.ageInput);
         TextView welcomeText = findViewById(R.id.welcomeText);
         welcomeText.setText(R.string.Welcome);
 
 //        final TextView outPutView = findViewById(R.id.outPutView);
 
-
-
-
-        john = new Person("John", "Smith");
-        dan = new Person("Dan", "Jones");
 
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("Users");
@@ -71,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                myRef.child(fName.getText().toString()).setValue(new Person(fName.getText().toString(), sName.getText().toString()));
+                myRef.child(fName.getText().toString()).setValue(new Person(fName.getText().toString(), sName.getText().toString(), Integer.parseInt(age.getText().toString())));
 
             }
         });
@@ -84,28 +80,28 @@ public class MainActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 listView.invalidateViews();
                 Person person = dataSnapshot.getValue(Person.class);
-                adapter.add(person.firstName + " " + person.lastName);
+                adapter.add(person.firstName + " " + person.lastName + " age: " + person.age);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 listView.invalidateViews();
                 Person person = dataSnapshot.getValue(Person.class);
-                adapter.add(person.firstName + " " + person.lastName);
+                adapter.add(person.firstName + " " + person.lastName + " age: " + person.age);
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
                 listView.invalidateViews();
                 Person person = dataSnapshot.getValue(Person.class);
-                adapter.remove(person.firstName + " " + person.lastName);
+                adapter.remove(person.firstName + " " + person.lastName + " age: " + person.age);
             }
 
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {
                 listView.invalidateViews();
                 Person person = dataSnapshot.getValue(Person.class);
-                adapter.add(person.firstName + " " + person.lastName);
+                adapter.add(person.firstName + " " + person.lastName + " age: " + person.age);
             }
 
             @Override
