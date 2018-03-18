@@ -11,6 +11,10 @@ public class Person {
     public String firstName;
     public String lastName;
 
+    public Person(){
+
+    }
+
     public Person(String first, String last){
 
         this.firstName = first;

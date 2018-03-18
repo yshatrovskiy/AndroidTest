@@ -1,7 +1,9 @@
 package com.example.yevgeniyshatrovskiy.crashcourse2018;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.Contacts;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -10,22 +12,30 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference myRef = database.getReference("message").child("users");
 
-
     TextView timerText;
-
     Person john, dan;
 
     @Override
@@ -36,9 +46,13 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
-        final EditText fName   = (EditText)findViewById(R.id.firstName);
-        final EditText sName   = (EditText)findViewById(R.id.secondName);
+        final EditText fName   = findViewById(R.id.firstName);
+        final EditText sName   = findViewById(R.id.secondName);
+        TextView welcomeText = findViewById(R.id.welcomeText);
+        welcomeText.setText(R.string.Welcome);
+
+//        final TextView outPutView = findViewById(R.id.outPutView);
+
 
 
 
@@ -48,29 +62,60 @@ public class MainActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         myRef = database.getReference("Users");
 
-
+        ArrayList<String> peopleList = new ArrayList<>();
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, peopleList);
+        final ListView listView = findViewById(R.id.peopleListView);
+        listView.setAdapter(adapter);
 
         Button submitButton = findViewById(R.id.submitButton);
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 myRef.child(fName.getText().toString()).setValue(new Person(fName.getText().toString(), sName.getText().toString()));
-                Snackbar.make(view, "Hello again Yevgeniy", Snackbar.LENGTH_LONG).show();
-                Log.v("Test", "Toast Message");
 
             }
         });
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        ChildEventListener personChildListener = new ChildEventListener() {
+
             @Override
-            public void onClick(View view) {
-                myRef.child("Dan").setValue(dan);
-                myRef.child("Phil").setValue(john);
-                Toast t = Toast.makeText(getApplicationContext(), "Wrote to JSON", Toast.LENGTH_SHORT);
-                t.show();
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                listView.invalidateViews();
+                Person person = dataSnapshot.getValue(Person.class);
+                adapter.add(person.firstName + " " + person.lastName);
             }
-        });
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                listView.invalidateViews();
+                Person person = dataSnapshot.getValue(Person.class);
+                adapter.add(person.firstName + " " + person.lastName);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                listView.invalidateViews();
+                Person person = dataSnapshot.getValue(Person.class);
+                adapter.remove(person.firstName + " " + person.lastName);
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                listView.invalidateViews();
+                Person person = dataSnapshot.getValue(Person.class);
+                adapter.add(person.firstName + " " + person.lastName);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        };
+
+        myRef.addChildEventListener(personChildListener);
     }
 
     @Override
@@ -121,4 +166,5 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 }
