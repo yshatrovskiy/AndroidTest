@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "169327103205-nmlbgj9i2vtre1o25hp2uu78pii963in.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.yevgeniyshatrovskiy.crashcourse2017",
+            "certificate_hash": "665885a28efca3cf825d425d85f9046b2cdee9af"
+          }
+        },
+        {
           "client_id": "169327103205-u90li42e57fobhqjapsog8473sp56ein.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
