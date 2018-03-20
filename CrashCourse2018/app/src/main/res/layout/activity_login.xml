@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.yevgeniyshatrovskiy.crashcourse2018.Login_Activity">
+    tools:context="com.example.yevgeniyshatrovskiy.crashcourse2018.Activities.Login_Activity">
 
     <TextView
         android:id="@+id/loginText"
@@ -15,7 +15,6 @@
         android:layout_marginTop="80dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Welcome"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -37,8 +36,7 @@
         android:layout_marginTop="40dp"
         android:ems="10"
         android:hint="Login Name"
-        android:inputType="textPersonName"
-        android:text="Name"
+        android:inputType="textPersonName|textWebEmailAddress"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginText" />

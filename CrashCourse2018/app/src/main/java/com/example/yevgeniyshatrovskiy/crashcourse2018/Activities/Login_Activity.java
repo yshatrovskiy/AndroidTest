@@ -1,4 +1,4 @@
-package com.example.yevgeniyshatrovskiy.crashcourse2018;
+package com.example.yevgeniyshatrovskiy.crashcourse2018.Activities;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.yevgeniyshatrovskiy.crashcourse2018.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -25,11 +26,16 @@ public class Login_Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        final TextView welcomeText = findViewById(R.id.loginText);
-        welcomeText.setText(R.string.Welcome);
+        TextView loginText = findViewById(R.id.loginText);
+        loginText.setText(R.string.Welcome);
+
+
         final EditText userName = findViewById(R.id.loginName);
+        userName.setHint(R.string.email);
         final EditText password = findViewById(R.id.loginPassword);
+        password.setHint(R.string.password);
         final Button loginButton = findViewById(R.id.loginButton);
+        loginButton.setText(R.string.submit);
 
 
         mAuth = FirebaseAuth.getInstance();
