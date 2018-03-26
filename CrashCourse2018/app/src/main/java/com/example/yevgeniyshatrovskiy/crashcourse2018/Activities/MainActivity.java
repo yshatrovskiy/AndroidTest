@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     TextView timerText;
     Person john, dan;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
