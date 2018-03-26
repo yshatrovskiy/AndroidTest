@@ -89,11 +89,22 @@ public class Login_Activity extends AppCompatActivity {
         userName.setHint(text);
 
 //        password.setHint(R.string.password);
-        final Button loginButton = findViewById(R.id.loginButton);
-        loginButton.setText(R.string.submit);
+        final Button existingLogin = findViewById(R.id.loginButton);
+        existingLogin.setText(R.string.submit);
+
+        final Button anonLogin = findViewById(R.id.anonLogin);
 
 
         mAuth = FirebaseAuth.getInstance();
+
+        View.OnClickListener anonL =  new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                anonLogin();
+            }
+        };
+
+        anonLogin.setOnClickListener(anonL);
 
         View.OnClickListener login = new View.OnClickListener() {
             @Override
@@ -102,7 +113,9 @@ public class Login_Activity extends AppCompatActivity {
             }
         };
 
-        loginButton.setOnClickListener(login);
+        existingLogin.setOnClickListener(login);
+
+
     }
 
     private void createAccount(String nname, String pword) {
@@ -119,6 +132,25 @@ public class Login_Activity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void anonLogin(){
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            accessApp();
+                        } else {
+                            Log.w("ANON", "Anonymous Login:failure", task.getException());
+                        }
+
+                        // ...
+                    }
+                });
+    }
+
+
 
     private void accessApp(){
         Intent intent = new Intent(this, MainActivity.class);

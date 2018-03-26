@@ -18,11 +18,14 @@ import android.widget.Toast;
 
 import com.example.yevgeniyshatrovskiy.crashcourse2018.Objects.Person;
 import com.example.yevgeniyshatrovskiy.crashcourse2018.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         database = FirebaseDatabase.getInstance();
+        final String key = FirebaseAuth.getInstance().getCurrentUser().getUid();
         myRef = database.getReference("Users");
 
         ArrayList<String> peopleList = new ArrayList<>();
@@ -61,10 +65,11 @@ public class MainActivity extends AppCompatActivity {
 
         Button submitButton = findViewById(R.id.submitButton);
         submitButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 if (!fName.getText().toString().isEmpty() && !sName.getText().toString().isEmpty() && !age.getText().toString().isEmpty()){
-                    myRef.child(fName.getText().toString()).setValue(new Person(fName.getText().toString(), sName.getText().toString(), Integer.parseInt(age.getText().toString())));
+                    myRef.child(key).child(fName.getText().toString()).setValue(new Person(fName.getText().toString(), sName.getText().toString(), Integer.parseInt(age.getText().toString())));
                     fName.setText("");
                     sName.setText("");
                     age.setText("");
@@ -72,6 +77,42 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        ChildEventListener userChildListener = new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                listView.invalidateViews();
+                Person person = dataSnapshot.getValue(Person.class);
+                adapter.add(person.firstName + " " + person.lastName + " age: " + person.age);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                listView.invalidateViews();
+                Person person = dataSnapshot.getValue(Person.class);
+                adapter.add(person.firstName + " " + person.lastName + " age: " + person.getAge());
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                listView.invalidateViews();
+                Person person = dataSnapshot.getValue(Person.class);
+                adapter.remove(person.firstName + " " + person.lastName + " age: " + person.getAge());
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                listView.invalidateViews();
+                Person person = dataSnapshot.getValue(Person.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
+        myRef.child("all_users").addChildEventListener(userChildListener);
 
         ChildEventListener personChildListener = new ChildEventListener() {
 
@@ -109,55 +150,10 @@ public class MainActivity extends AppCompatActivity {
 
         };
 
-        myRef.addChildEventListener(personChildListener);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    public void startTimer(){
-        new CountDownTimer(100,100){
-            @Override
-            public void onTick(long millisUntilFinished) {
-                timerText.setText("seconds remaining: " + millisUntilFinished / 1000);
-            }
-
-            @Override
-            public void onFinish() {
-                timerText.setText("done!");
-            }
-        };
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        switch(item.getItemId()){
-
-            case R.id.action_settings:
-                Toast toast = Toast.makeText(this, "Action Settings", Toast.LENGTH_LONG);
-                toast.show();
-                break;
-
-            case R.id.recent_settings:
-                Toast toast2 = Toast.makeText(this, "Recent Settings", Toast.LENGTH_LONG);
-                toast2.show();
-                break;
+        if(key != null){
+            myRef.child(key).addChildEventListener(personChildListener);
         }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
+
 }
